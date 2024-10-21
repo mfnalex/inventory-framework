@@ -238,7 +238,7 @@ public final class ReflectionUtils {
      * @since 4.0.0
      */
     public static boolean supports(int minorNumber) {
-        return MINOR_NUMBER >= minorNumber;
+        return true;
     }
 
     /**
