@@ -1,12 +1,22 @@
 plugins {
     alias(libs.plugins.shadowjar)
     alias(libs.plugins.kotlin)
+    id("io.papermc.paperweight.userdev") version "1.7.3"
+
 }
 
 apply from: '../library.gradle'
 apply from: '../publish.gradle'
 
 dependencies {
+    paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
     compileOnly libs.spigot
     compileOnlyApi projects.inventoryFrameworkPlatformBukkit
+}
+
+java {
+    disableAutoTargetJvm()
+    toolchain {
+        it.setLanguageVersion(JavaLanguageVersion.of(21))
+    }
 }
