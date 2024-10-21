@@ -63,34 +63,34 @@ public final class ReflectionUtils {
     public static final String NMS_VERSION;
 
     static { // This needs to be right below VERSION because of initialization order.
-        // This package loop is used to avoid implementation-dependant strings like Bukkit.getVersion() or
-        // Bukkit.getBukkitVersion()
-        // which allows easier testing as well.
-        String found = null;
-        for (Package pack : Package.getPackages()) {
-            String name = pack.getName();
-
-            // .v because there are other packages.
-            if (name.startsWith("org.bukkit.craftbukkit.v")) {
-                found = pack.getName().split("\\.")[3];
-
-                // Just a final guard to make sure it finds this important class.
-                // As a protection for forge+bukkit implementation that tend to mix versions.
-                // The real CraftPlayer should exist in the package.
-                // Note: Doesn't seem to function properly. Will need to separate the version
-                // handler for NMS and CraftBukkit for softwares like catmc.
-                try {
-                    Class.forName("org.bukkit.craftbukkit." + found + ".entity.CraftPlayer");
-                    break;
-                } catch (ClassNotFoundException e) {
-                    found = null;
-                }
-            }
-        }
-        if (found == null)
-            throw new IllegalArgumentException(
-                    "Failed to parse server version. Could not find any package starting with name: 'org.bukkit.craftbukkit.v'");
-        NMS_VERSION = found;
+//        // This package loop is used to avoid implementation-dependant strings like Bukkit.getVersion() or
+//        // Bukkit.getBukkitVersion()
+//        // which allows easier testing as well.
+//        String found = null;
+//        for (Package pack : Package.getPackages()) {
+//            String name = pack.getName();
+//
+//            // .v because there are other packages.
+//            if (name.startsWith("org.bukkit.craftbukkit.v")) {
+//                found = pack.getName().split("\\.")[3];
+//
+//                // Just a final guard to make sure it finds this important class.
+//                // As a protection for forge+bukkit implementation that tend to mix versions.
+//                // The real CraftPlayer should exist in the package.
+//                // Note: Doesn't seem to function properly. Will need to separate the version
+//                // handler for NMS and CraftBukkit for softwares like catmc.
+//                try {
+//                    Class.forName("org.bukkit.craftbukkit." + found + ".entity.CraftPlayer");
+//                    break;
+//                } catch (ClassNotFoundException e) {
+//                    found = null;
+//                }
+//            }
+//        }
+//        if (found == null)
+//            throw new IllegalArgumentException(
+//                    "Failed to parse server version. Could not find any package starting with name: 'org.bukkit.craftbukkit.v'");
+        NMS_VERSION = "v1_21_R1";
     }
 
     /**
@@ -237,9 +237,9 @@ public final class ReflectionUtils {
      * @see #MINOR_NUMBER
      * @since 4.0.0
      */
-    public static boolean supports(int minorNumber) {
-        return true;
-    }
+	public static boolean supports(int minorNumber) {
+		return MINOR_NUMBER >= minorNumber;
+	}
 
     /**
      * Get a NMS (net.minecraft.server) class which accepts a package for 1.17 compatibility.
