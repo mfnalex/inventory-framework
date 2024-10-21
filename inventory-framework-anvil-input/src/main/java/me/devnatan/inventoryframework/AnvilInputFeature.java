@@ -25,6 +25,9 @@ import me.devnatan.inventoryframework.state.State;
 import me.devnatan.inventoryframework.state.StateValue;
 import me.devnatan.inventoryframework.state.StateValueHost;
 import me.devnatan.inventoryframework.state.StateWatcher;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.inventory.MenuType;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -164,10 +167,9 @@ public final class AnvilInputFeature implements Feature<AnvilInputConfig, Void, 
 
             final String globalInitialInput = config.initialInput;
             final String scopedInitialInput = anvilInput.get(context);
-
             final Inventory inventory = AnvilInputNMS.open(
                     context.getPlayer(),
-                    context.getConfig().getTitle(),
+				(String) context.getConfig().getTitle(),
                     scopedInitialInput.isEmpty() ? globalInitialInput : scopedInitialInput);
             final ViewContainer container =
                     new BukkitViewContainer(inventory, context.isShared(), ViewType.ANVIL, true);

@@ -1,6 +1,7 @@
 package me.devnatan.inventoryframework;
 
 import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.createTitleComponent;
+import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.getBukkitView;
 import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.getContainerOrName;
 import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.packetPlayOutOpenWindow;
 import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.useContainers;
@@ -8,11 +9,15 @@ import static me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate.
 import java.util.Objects;
 import me.devnatan.inventoryframework.runtime.thirdparty.InventoryUpdate;
 import me.devnatan.inventoryframework.runtime.thirdparty.ReflectionUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.MenuType;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.inventory.view.CraftAnvilView;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.AnvilInventory;
@@ -25,7 +30,7 @@ class AnvilInputNMS {
 
     private AnvilInputNMS() {}
 
-    public static Inventory open(Player player, Object title, String initialInput) {
+    public static Inventory open(Player player, String title, String initialInput) {
         try {
             ServerPlayer entityPlayer = ((CraftPlayer) player).getHandle();
             AbstractContainerMenu container = entityPlayer.inventoryMenu;
@@ -40,9 +45,9 @@ class AnvilInputNMS {
             anvilContainer.checkReachable = false;
             // CONTAINER_CHECK_REACHABLE.invoke(anvilContainer, false);
 
-            final AnvilInventory inventory = (AnvilInventory)
-                    ((InventoryView) InventoryUpdate.getBukkitView.invoke(anvilContainer)).getTopInventory();
-
+            final CraftAnvilView view =anvilContainer.getBukkitView();
+			view.setTitle(title == null ? "" : title);
+			final AnvilInventory inventory = view.getTopInventory();
             inventory.setMaximumRepairCost(0);
 
             @SuppressWarnings("deprecation")
@@ -52,14 +57,8 @@ class AnvilInputNMS {
             item.setItemMeta(meta);
             inventory.setItem(0, item);
 
-            Object nmsContainers = getContainerOrName(InventoryUpdate.Containers.ANVIL, InventoryType.ANVIL);
-            Object updatedTitle = createTitleComponent(title == null ? "" : title);
-            Object openWindowPacket = useContainers()
-                    ? packetPlayOutOpenWindow.invoke(windowId, nmsContainers, updatedTitle)
-                    : packetPlayOutOpenWindow.invoke(
-                            windowId, nmsContainers, updatedTitle, InventoryType.ANVIL.getDefaultSize());
-
-            ReflectionUtils.sendPacketSync(player, openWindowPacket);
+			ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(windowId,MenuType.ANVIL, title != null ? Component.literal(title ) : Component.empty());
+            ReflectionUtils.sendPacketSync(player, packet);
             entityPlayer.containerMenu = anvilContainer;
 
             entityPlayer.initMenu(anvilContainer);

@@ -160,8 +160,9 @@ public final class ReflectionUtils {
     /**
      * Mojang remapped their NMS in 1.17: <a href="https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317">Spigot Thread</a>
      */
-    public static final String CRAFTBUKKIT_PACKAGE = "org.bukkit.craftbukkit." + NMS_VERSION + '.',
-            NMS_PACKAGE = v(17, "net.minecraft.").orElse("net.minecraft.server." + NMS_VERSION + '.');
+
+    public static final String CRAFTBUKKIT_PACKAGE = "org.bukkit.craftbukkit." + (supports(21)? "" : NMS_VERSION + '.');
+	public static final String NMS_PACKAGE = v(17, "net.minecraft.").orElse( "net.minecraft.server." + (supports(21) ? "" : NMS_VERSION + '.'));
     /**
      * A nullable public accessible field only available in {@code EntityPlayer}.
      * This can be null if the player is offline.
@@ -196,8 +197,9 @@ public final class ReflectionUtils {
 
             final VersionHandler<String> methodVersion;
 
-            // MC 1.20.2 obfuscated sendPacket is "b"
-            if (supportsMC1202()) methodVersion = v(20, "b");
+            // MC 1.20.2 obfuscated sendPacket is "b"-
+			if (supports(21)) methodVersion = v(21, "sendPacket");
+			else if (supportsMC1202()) methodVersion = v(20, "b");
             else methodVersion = v(18, "a");
 
             sendPacket = lookup.findVirtual(

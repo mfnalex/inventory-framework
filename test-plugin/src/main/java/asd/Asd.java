@@ -3,6 +3,7 @@ package asd;
 import me.devnatan.inventoryframework.AnvilInputFeature;
 import me.devnatan.inventoryframework.ViewFrame;
 
+import me.devnatan.inventoryframework.runtime.thirdparty.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +30,8 @@ public class Asd extends JavaPlugin implements Listener {
 		).register();
 
 		Bukkit.getPluginManager().registerEvents(this, this);
+
+		ReflectionUtils.supports(21);
 
 	}
 
